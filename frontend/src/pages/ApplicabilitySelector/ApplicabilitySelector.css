@@ -1,6 +1,4 @@
 /* src/components/ApplicabilitySelector.css */
-/* (No changes needed; adding .response-summary for new section) */
-
 .applicability-container {
   max-width: 800px;
   margin: 0 auto;
@@ -163,11 +161,46 @@
   margin-top: 0;
 }
 
-.response-summary pre {
-  background-color: #f8f9fa;
-  padding: 10px;
-  border-radius: 4px;
-  overflow-x: auto;
+.selected-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.selected-item {
+  background-color: white;
+  padding: 15px;
+  border-radius: 5px;
+  border-left: 4px solid #28a745;
+}
+
+.selected-item h4 {
+  margin: 0 0 5px 0;
+  color: #333;
+}
+
+.local-desc {
+  margin: 5px 0;
+  font-style: italic;
+  color: #666;
+}
+
+.fetched-summary {
+  margin: 5px 0;
+  font-size: 0.9em;
+  color: #495057;
+}
+
+.section-count {
+  margin: 5px 0;
+  font-size: 0.9em;
+  color: #28a745;
+  font-weight: bold;
+}
+
+.error {
+  margin: 5px 0;
+  color: #721c24;
   font-size: 0.9em;
 }
 

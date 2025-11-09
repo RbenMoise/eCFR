@@ -1,12 +1,12 @@
 // src/components/ApplicabilitySelector.jsx
 import React, { useState } from "react";
-import axios from "axios"; // Ensure axios is installed: npm i axios
+import axios from "axios";
 import "./ApplicabilitySelector.css";
 
-const ApplicabilitySelector = ({ onSelection }) => {
+const ApplicabilitySelector = () => {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [responseData, setResponseData] = useState(null); // To store backend response for display/proceed
+  const [selectedParts, setSelectedParts] = useState([]); // Store fetched selected parts data
 
   const options = [
     {
@@ -14,21 +14,21 @@ const ApplicabilitySelector = ({ onSelection }) => {
       title: "Part 191 Only",
       description:
         "Gas Reporting: If your main need is incident/annual reporting for gas/LNG/UNGSF facilities.",
-      color: "#007bff", // Blue for gas reporting
+      color: "#007bff",
     },
     {
       id: 2,
       title: "Part 192",
       description:
         "Gas Pipeline Standards: If operating natural gas transmission, distribution, or gathering lines.",
-      color: "#28a745", // Green for gas standards
+      color: "#28a745",
     },
     {
       id: 3,
       title: "Part 195",
       description:
         "Hazardous Liquids Standards: If handling crude oil, refined products, or CO2 pipelines.",
-      color: "#ffc107", // Yellow/orange for liquids
+      color: "#ffc107",
     },
   ];
 
@@ -36,6 +36,8 @@ const ApplicabilitySelector = ({ onSelection }) => {
     setSelectedOptions((prev) =>
       prev.includes(id) ? prev.filter((opt) => opt !== id) : [...prev, id]
     );
+    // Clear previous results on re-selection
+    setSelectedParts([]);
   };
 
   const handleSubmit = async () => {
@@ -46,27 +48,16 @@ const ApplicabilitySelector = ({ onSelection }) => {
 
     setLoading(true);
     try {
-      // POST to backend (adjust URL if using proxy, e.g., '/api/selection')
       const response = await axios.post("http://localhost:4000/api/selection", {
         selectedOptions,
       });
 
-      console.log("Backend response:", response.data); // For debugging
-      setResponseData(response.data); // Store for display or next steps
+      console.log("Backend response:", response.data);
 
-      // Optional: Pass to parent prop
-      if (onSelection) {
-        onSelection(response.data);
-      }
+      // Store fetched data for display (data array from response)
+      setSelectedParts(response.data.data || []);
 
-      // For demo: Alert success and show summary
-      alert(
-        `Success! Fetched data for Parts: ${
-          response.data.selectedParts?.join(", ") || "N/A"
-        }. Check console for details.`
-      );
-
-      // Proceed logic here (e.g., navigate to questionnaire with response.data)
+      alert(`Success! Fetched data for selected parts.`);
     } catch (error) {
       console.error("API Error:", error);
       alert(
@@ -76,6 +67,9 @@ const ApplicabilitySelector = ({ onSelection }) => {
       setLoading(false);
     }
   };
+
+  // Helper to get local option by ID
+  const getOptionById = (id) => options.find((opt) => opt.id === id);
 
   return (
     <div className="applicability-container">
@@ -105,7 +99,7 @@ const ApplicabilitySelector = ({ onSelection }) => {
           </li>
         </ul>
         <p>
-          Many operators deal with multiple types select more than one if
+          Many operators deal with multiple types—select more than one if
           applicable.
         </p>
       </div>
@@ -148,11 +142,34 @@ const ApplicabilitySelector = ({ onSelection }) => {
         </button>
       </div>
 
-      {/* Optional: Display response summary */}
-      {responseData && (
+      {/* Display selected parts summary */}
+      {selectedParts.length > 0 && (
         <div className="response-summary">
-          <h3>Fetch Results:</h3>
-          <pre>{JSON.stringify(responseData, null, 2)}</pre>
+          <h3>Selected Parts Overview</h3>
+          <div className="selected-list">
+            {selectedParts.map((part) => {
+              const localOption = getOptionById(
+                part.part === "191" ? 1 : part.part === "192" ? 2 : 3
+              );
+              return (
+                <div key={part.part} className="selected-item">
+                  <h4>{part.title || localOption?.title}</h4>
+                  <p className="local-desc">{localOption?.description}</p>
+                  <p className="fetched-summary">
+                    <strong>Fetched Summary:</strong> {part.summary}
+                  </p>
+                  <p className="section-count">
+                    Sections Fetched: {part.sections?.length || 0}
+                  </p>
+                  {part.error && (
+                    <p className="error">
+                      <strong>Error:</strong> {part.error}
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
           <p>Ready for Step 2 questionnaire using these parts!</p>
         </div>
       )}

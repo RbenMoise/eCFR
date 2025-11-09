@@ -2,7 +2,8 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const selectionRoutes = require("./routes/selectionRoute.js");
-const { test } = require("./controllers/selectionController.js");
+const test = require("./routes/selectionRoute.js");
+const profileRoutes = require("./routes/selectionRoute.js");
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ app.use(express.json());
 // Routes
 app.use("/api/test", test);
 app.use("/api", selectionRoutes);
+app.use("/api", profileRoutes);
 
 // Start server
 const PORT = process.env.PORT || 4000;

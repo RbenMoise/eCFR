@@ -1,0 +1,118 @@
+/* src/components/OperatorProfile.css */
+.profile-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: "Arial", sans-serif;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.header-section {
+  text-align: center;
+  background: linear-gradient(135deg, #28a745, #218838);
+  color: white;
+  padding: 30px 20px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+}
+
+.header-section h1 {
+  margin: 0 0 10px 0;
+  font-size: 2em;
+}
+
+.header-section p {
+  margin: 0;
+  font-size: 1.1em;
+  opacity: 0.9;
+}
+
+.questionnaire-form {
+  background-color: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+}
+
+.question-group {
+  margin-bottom: 20px;
+}
+
+.question-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.question-group select,
+.question-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1em;
+}
+
+.submit-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 5px;
+  font-size: 1.1em;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.submit-btn:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.response-summary {
+  background-color: #d1ecf1;
+  border: 1px solid #bee5eb;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.response-summary h3 {
+  color: #0c5460;
+  margin-top: 0;
+}
+
+.response-summary pre {
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 0.9em;
+}
+
+.footer {
+  text-align: center;
+  padding: 20px;
+  background-color: #e9ecef;
+  border-radius: 8px;
+  color: #495057;
+}
+
+.footer p {
+  margin: 5px 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 10px;
+  }
+}

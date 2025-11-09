@@ -1,10 +1,8 @@
 // controllers/selectionController.js
 const axios = require("axios");
-const cheerio = require("cheerio"); // For simple HTML parsing/extraction
+const cheerio = require("cheerio");
 
 // Helper function to fetch and extract basic summary from eCFR page
-// Note: For full AI summarization in production, integrate with an LLM API (e.g., Grok API).
-// Here, we do a lightweight extraction of key sections and text for prototype.
 async function fetchPartSummary(partNumber) {
   const baseUrl = `https://www.ecfr.gov/current/title-49/subtitle-B/chapter-I/subchapter-D/part-${partNumber}`;
 
@@ -24,7 +22,7 @@ async function fetchPartSummary(partNumber) {
     $("section[id]").each((i, elem) => {
       const id = $(elem).attr("id");
       const heading = $(elem).find("h2, h3").first().text().trim();
-      const content = $(elem).text().substring(0, 500).trim() + "..."; // Truncate for brevity
+      const content = $(elem).text().substring(0, 500).trim() + "...";
       if (id && heading && content) {
         sections.push({ id, heading, content });
       }
@@ -62,7 +60,6 @@ const handleSelection = async (req, res) => {
   try {
     const { selectedOptions } = req.body;
     console.log("Selected options:", selectedOptions);
-    res.json({ message: "Selection received", selectedOptions });
 
     if (
       !selectedOptions ||
@@ -113,8 +110,4 @@ const handleSelection = async (req, res) => {
   }
 };
 
-const test = (req, res) => {
-  res.json({ message: "test successful" });
-};
-
-module.exports = { handleSelection, test };
+module.exports = { handleSelection };
