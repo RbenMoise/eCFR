@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import MainLayout from "./layouts/MainLayout";
 import Dashboard from "./pages/DashBoad";
-import Questionnaire from "./pages/Questionnaire";
+import Questionnaire from "./pages/ApplicabilitySelector/ApplicabilitySelector";
 import Reports from "./pages/Reports";
 import "./styles/main.css";
 
