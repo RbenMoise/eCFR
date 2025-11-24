@@ -12,23 +12,46 @@ async function fetchPartSummary(partNumber) {
         "User-Agent":
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
       },
+      timeout: 10000, // 10s timeout
     });
 
     const $ = cheerio.load(response.data);
     const title = $("h1").first().text().trim() || `Part ${partNumber}`;
 
-    // Extract key sections: Look for <section> tags or headings with § symbols
+    // Improved: Target § headings (h2-h4), extract id & sibling <p> content
+    // In fetchPartSummary, replace the sections extraction block with:
     const sections = [];
-    $("section[id]").each((i, elem) => {
-      const id = $(elem).attr("id");
-      const heading = $(elem).find("h2, h3").first().text().trim();
-      const content = $(elem).text().substring(0, 500).trim() + "...";
-      if (id && heading && content) {
-        sections.push({ id, heading, content });
-      }
-    });
+    $("h2, h3, h4")
+      .filter(function () {
+        return $(this).text().trim().includes("§");
+      })
+      .slice(0, 10)
+      .each((i, elem) => {
+        // Scan first 10 potential headings
+        const id = $(elem).attr("id") || `section-${i + 1}`;
+        const heading = $(elem).text().trim();
 
-    // Basic summary: First few sections or overview
+        // Extract content: Next <p>s until next heading (up to 500 chars)
+        let content = "";
+        let next = $(elem).next();
+        while (next.length && !next.is("h2, h3, h4") && content.length < 500) {
+          if (next.is("p")) {
+            content += next.text().trim() + " ";
+          }
+          next = next.next();
+        }
+        content =
+          content.trim().substring(0, 500) +
+          (content.length >= 500 ? "..." : "");
+
+        if (heading && content) {
+          sections.push({ id, heading, content });
+        }
+      });
+
+    // Rest unchanged...
+
+    // Dynamic summary
     const summary =
       sections.length > 0
         ? `Overview for ${title}: Key sections include ${sections
@@ -41,7 +64,7 @@ async function fetchPartSummary(partNumber) {
       part: partNumber,
       title,
       summary,
-      sections: sections.slice(0, 5), // Limit to top 5 for small payload
+      sections: sections.slice(0, 5),
       fullUrl: baseUrl,
       fetchedAt: new Date().toISOString(),
     };
@@ -71,9 +94,8 @@ const handleSelection = async (req, res) => {
       });
     }
 
-    // Validate options: Only allow 1, 2, 3
     const validOptions = selectedOptions.filter((opt) =>
-      [1, 2, 3].includes(opt)
+      [1, 2, 3].includes(Number(opt))
     );
     if (validOptions.length === 0) {
       return res.status(400).json({
@@ -82,17 +104,14 @@ const handleSelection = async (req, res) => {
       });
     }
 
-    // Map IDs to part numbers
     const partNumbers = validOptions.map((id) => {
       const mapping = { 1: "191", 2: "192", 3: "195" };
       return mapping[id];
     });
 
-    // Fetch summaries in parallel for efficiency (small payloads)
     const fetchPromises = partNumbers.map((part) => fetchPartSummary(part));
     const summaries = await Promise.all(fetchPromises);
 
-    // Response: Small, focused data only for selected parts
     res.status(200).json({
       message: `Fetched summaries for Parts: ${partNumbers.join(", ")}`,
       selectedParts: partNumbers,
